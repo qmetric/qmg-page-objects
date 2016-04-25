@@ -3,7 +3,6 @@ package com.qmetric.pageobjects.legacy;
 import com.google.common.base.Predicate;
 import com.qmetric.pageobjects.BasePageObject;
 import com.qmetric.pageobjects.enquiry_forms.legacy.PaymentDetails;
-import com.qmetric.shared.SharedData;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -39,6 +38,10 @@ public class LegacyWebsiteMainPage extends BasePageObject
         return driver.getTitle().equalsIgnoreCase("Get a quote");
     }
 
+    public String policyNumber;
+
+    public String customerId;
+
     public void createNewAccount() throws Exception
     {
         legacyNewAccountCreationPage = PageFactory.initElements(driver, LegacyNewAccountCreationPage.class);
@@ -71,7 +74,7 @@ public class LegacyWebsiteMainPage extends BasePageObject
         return driver.getTitle().equalsIgnoreCase("Policy summary");
     }
 
-    public void makePaymentByCard() throws Exception
+    public String makePaymentByCard() throws Exception
     {
         PolicySummaryPage policySummaryPage = PageFactory.initElements(driver, PolicySummaryPage.class);
         policySummaryPage.continueToNextPage();
@@ -85,10 +88,10 @@ public class LegacyWebsiteMainPage extends BasePageObject
         });
         enterCardDetails();
         netbanxAuthentication();
-        SharedData.policyNumber = getPolicyNumber();
+        return getPolicyNumber();
     }
 
-    public void makePaymentByCardWebsite() throws Exception
+    public String makePaymentByCardWebsite() throws Exception
     {
         PolicySummaryPage policySummaryPage = PageFactory.initElements(driver, PolicySummaryPage.class);
         policySummaryPage.continueToNextPageAggFlow();
@@ -102,7 +105,7 @@ public class LegacyWebsiteMainPage extends BasePageObject
         });
         enterCardDetails();
         netbanxAuthentication();
-        SharedData.policyNumber = getPolicyNumber();
+        return getPolicyNumber();
     }
 
     private void enterCardDetails() throws Exception
@@ -115,7 +118,6 @@ public class LegacyWebsiteMainPage extends BasePageObject
         legacyWebsitePaymentPage.enterCardVerificationValue(new PaymentDetails().getSecurityCode());
         legacyWebsitePaymentPage.acceptTsAndCs();
         legacyWebsitePaymentPage.clickPayNowButton();
-
     }
 
     private void netbanxAuthentication()
@@ -129,9 +131,15 @@ public class LegacyWebsiteMainPage extends BasePageObject
     public String getPolicyNumber()
     {
         NetbanxPurchaseFinishedDetails netbanxPurchaseFinishedDetails = PageFactory.initElements(driver, NetbanxPurchaseFinishedDetails.class);
-        String policyNumber = netbanxPurchaseFinishedDetails.getPolicyNumberWebSite();
+        policyNumber = netbanxPurchaseFinishedDetails.getPolicyNumberWebSite();
+        customerId = netbanxPurchaseFinishedDetails.getCustomerId();
         driver.switchTo().defaultContent();
         return policyNumber;
+    }
+
+    public String getCustomerId()
+    {
+        return customerId;
     }
 
     public void amendEnquiry()
@@ -147,7 +155,7 @@ public class LegacyWebsiteMainPage extends BasePageObject
         policySummaryPage.modifyStartDate(prevStartDate, startDate);
     }
 
-    public void makePaymentByDirectDebitWebsite(final String directDebitProvider) throws Exception
+    public String makePaymentByDirectDebitWebsite(final String directDebitProvider) throws Exception
     {
         PolicySummaryPage policySummaryPage = PageFactory.initElements(driver, PolicySummaryPage.class);
         policySummaryPage.clickPayByDirectDebit();
@@ -162,25 +170,7 @@ public class LegacyWebsiteMainPage extends BasePageObject
         });
         enterDirectDebitDetails(directDebitProvider);
         netbanxAuthentication();
-        SharedData.policyNumber = getPolicyNumber();
-    }
-
-    public void makePaymentByDirectDebit(final String directDebitProvider) throws Exception
-    {
-        PolicySummaryPage policySummaryPage = PageFactory.initElements(driver, PolicySummaryPage.class);
-        policySummaryPage.clickPayByDirectDebit();
-        policySummaryPage.continueToNextPage();
-        webDriverWaitWithPolling(5, 1, new Predicate<WebDriver>()
-        {
-            @Override
-            public boolean apply(WebDriver webDriver)
-            {
-                return driver.getTitle().equals("Payment");
-            }
-        });
-        enterDirectDebitDetails(directDebitProvider);
-        netbanxAuthentication();
-        SharedData.policyNumber = getPolicyNumber();
+        return getPolicyNumber();
     }
 
     private void enterDirectDebitDetails(String directDebitProvider) throws Exception

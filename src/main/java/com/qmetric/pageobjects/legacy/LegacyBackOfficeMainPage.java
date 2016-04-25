@@ -2,7 +2,6 @@ package com.qmetric.pageobjects.legacy;
 
 import com.qmetric.pageobjects.BasePageObject;
 import com.qmetric.pageobjects.enquiry_forms.legacy.PaymentDetails;
-import com.qmetric.shared.SharedData;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,13 +17,17 @@ public class LegacyBackOfficeMainPage extends BasePageObject
         super(driver);
     }
 
-    public void makePaymentByCard() throws Exception
+    public String policyNumber;
+
+    public String customerId;
+
+    public String makePaymentByCard() throws Exception
     {
         PolicySummaryPage policySummaryPage = PageFactory.initElements(driver, PolicySummaryPage.class);
         policySummaryPage.continueToNextPage();
         new WebDriverWait(driver, 20).until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("netbanx"));
         enterCardDetails();
-        SharedData.policyNumber = getPolicyNumber();
+        return getPolicyNumber();
     }
 
     private void enterCardDetails() throws Exception
@@ -41,8 +44,14 @@ public class LegacyBackOfficeMainPage extends BasePageObject
     public String getPolicyNumber()
     {
         NetbanxPurchaseFinishedDetails netbanxPurchaseFinishedDetails = PageFactory.initElements(driver, NetbanxPurchaseFinishedDetails.class);
-        String policyNumber = netbanxPurchaseFinishedDetails.getPolicyNumber();
-        return policyNumber;
+        policyNumber = netbanxPurchaseFinishedDetails.getPolicyNumber();
+        customerId = netbanxPurchaseFinishedDetails.getCustomerId();
+        return netbanxPurchaseFinishedDetails.getPolicyNumber();
+    }
+
+    public String getCustomerId()
+    {
+        return customerId;
     }
 
     public void selectAmendEnquiry()
@@ -58,14 +67,14 @@ public class LegacyBackOfficeMainPage extends BasePageObject
         policySummaryPage.modifyStartDateBackOffice(prevStartDate, startDate);
     }
 
-    public void makePaymentByDirectDebit(String directDebitProvider) throws Exception
+    public String makePaymentByDirectDebit(String directDebitProvider) throws Exception
     {
         PolicySummaryPage policySummaryPage = PageFactory.initElements(driver, PolicySummaryPage.class);
         policySummaryPage.clickPayByDirectDebit();
         policySummaryPage.continueToNextPage();
         new WebDriverWait(driver, 20).until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("netbanx"));
         enterDirectDebitDetails(directDebitProvider);
-        SharedData.policyNumber = getPolicyNumber();
+        return getPolicyNumber();
     }
 
     private void enterDirectDebitDetails(String directDebitProvider) throws Exception

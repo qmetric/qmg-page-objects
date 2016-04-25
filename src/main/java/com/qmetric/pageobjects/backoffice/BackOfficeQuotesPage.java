@@ -439,18 +439,17 @@ public class BackOfficeQuotesPage extends BasePageObject
         }.execute();
     }
 
-    public void storeMonthlyPrice()
+    public String storeMonthlyPrice()
     {
-        new DynamicElementHandler<Void>()
+        return new DynamicElementHandler<String>()
         {
             @Override
-            public Void handleDynamicElement()
+            public String handleDynamicElement()
             {
                 WebElement monthlyPrice = quoteElement.findElement(By.className("price-monthly"));
                 String monthlyText = monthlyPrice.getText();
                 monthlyText = monthlyText.replaceAll("\\s","");
-                SharedData.quoteMonthlyPrice = monthlyText.split(":")[1];
-                return null;
+                return monthlyText.split(":")[1];
             }
         }.execute();
     }

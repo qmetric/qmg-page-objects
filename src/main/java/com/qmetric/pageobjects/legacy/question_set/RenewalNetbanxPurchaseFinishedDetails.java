@@ -1,7 +1,6 @@
 package com.qmetric.pageobjects.legacy.question_set;
 
 import com.qmetric.pageobjects.BasePageObject;
-import com.qmetric.shared.SharedData;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -14,7 +13,6 @@ public class RenewalNetbanxPurchaseFinishedDetails extends BasePageObject
 
     @FindBy(css = "#policySummary dl dd:nth-child(7)")
     private WebElement policyNumber;
-
 
     @FindBy(css = "#policySummary dl dd:nth-child(5)")
     private WebElement customerID;
@@ -29,9 +27,16 @@ public class RenewalNetbanxPurchaseFinishedDetails extends BasePageObject
 
     public String getPolicyNumber()
     {
-        SharedData.policyNumber = policyNumber.getText();
-        SharedData.customerId = customerID.getText();
-        SharedData.grossPremium = grossPremium.getText().replace("£", "");
         return policyNumber.getText();
+    }
+
+    public String getCustomerId()
+    {
+        return customerID.getText();
+    }
+
+    public String getGrossPremium()
+    {
+        return grossPremium.getText().replace("£", "");
     }
 }

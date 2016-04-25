@@ -162,15 +162,16 @@ public class WebsiteQuotesPage extends BasePageObject
         new WebDriverWait(driver, 20).until(ExpectedConditions.visibilityOfElementLocated(By.className("quotespage")));
     }
 
-    public void selectRandomQuote()
+    public String selectRandomQuote()
     {
         List<WebElement> quotes = getQuotes();
         int randomIndex = new Random().nextInt(quotes.size());
         final WebElement quote = quotes.get(randomIndex);
         WebElement selectQuoteButton = quote.findElement(By.cssSelector("button"));
         final WebElement monthlyPriceElement = quote.findElement(By.className("monthly"));
-        SharedData.websiteQuoteMonthlyPrice = monthlyPriceElement.getText().split(" ")[1];
+        String randomQuoteMonthlyPrice = monthlyPriceElement.getText().split(" ")[1];
         selectQuoteButton.click();
+        return randomQuoteMonthlyPrice;
     }
 
     public void selectExtras(final List<Map<String, String>> extras)
@@ -207,38 +208,39 @@ public class WebsiteQuotesPage extends BasePageObject
         }.execute();
     }
 
-    public void selectHomeQuote(final String quoteId)
-    {
+    public String selectHomeQuote(final String quoteId) throws Exception {
         List<WebElement> quotes = getQuotes();
         for (WebElement quote : quotes)
         {
             WebElement insurerColumn = quote.findElement(By.cssSelector(".insurer > img"));
             if (getQuoteId(insurerColumn).get().equals(quoteId))
             {
-                final WebElement monthlyPriceElement = quote.findElement(By.className("monthly"));
-                SharedData.websiteQuoteMonthlyPrice = monthlyPriceElement.getText().split(" ")[1];
-                WebElement selectQuoteButton = quote.findElement(By.cssSelector("button"));
-                selectQuoteButton.click();
-                break;
+                return innerSelectQuote(quote);
             }
         }
+        throw new Exception("Could not find quote with name " + quoteId);
     }
 
-    public void selectQuote(final String quoteName) throws Exception
+    public String selectQuote(final String quoteName) throws Exception
     {
         List<WebElement> quotes = getQuotes();
         for (WebElement quote : quotes)
         {
             if (quote.getText().contains(quoteName))
             {
-                final WebElement monthlyPriceElement = quote.findElement(By.className("monthly"));
-                SharedData.websiteQuoteMonthlyPrice = monthlyPriceElement.getText().split(" ")[1];
-                WebElement selectQuoteButton = quote.findElement(By.cssSelector("button"));
-                selectQuoteButton.click();
-                return;
+                return innerSelectQuote(quote);
             }
         }
         throw new Exception("Could not find quote with name " + quoteName);
+    }
+
+    private String innerSelectQuote(WebElement quote)
+    {
+        final WebElement monthlyPriceElement = quote.findElement(By.className("monthly"));
+        String monthlyPrice = monthlyPriceElement.getText().split(" ")[1];
+        WebElement selectQuoteButton = quote.findElement(By.cssSelector("button"));
+        selectQuoteButton.click();
+        return monthlyPrice;
     }
 
     public List<Map<String, String>> getHomeQuoteBenefits(final String quoteName)
@@ -336,17 +338,10 @@ public class WebsiteQuotesPage extends BasePageObject
         }
     }
 
-    public void storeEnquiryId()
+    public String storeEnquiryId() throws Exception
     {
-        try
-        {
-            String[] urlValues = driver.getCurrentUrl().split("/");
-            SharedData.enquiryId = urlValues[urlValues.length - 2];
-        }
-        catch (Exception e)
-        {
-            LOG.warn("Could not extract enquiry id from the url");
-        }
+        String[] urlValues = driver.getCurrentUrl().split("/");
+        return urlValues[urlValues.length - 2];
     }
 
     public List<Quote> getQuotesToCompare()

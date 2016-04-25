@@ -1,7 +1,6 @@
 package com.qmetric.pageobjects.legacy;
 
 import com.qmetric.pageobjects.BasePageObject;
-import com.qmetric.shared.SharedData;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -38,17 +37,31 @@ public class NetbanxPurchaseFinishedDetails extends BasePageObject
 
     public String getPolicyNumber()
     {
-        SharedData.policyNumber = policyNumber.getText();
-        SharedData.customerId = customerID.getText();
-        SharedData.grossPremium = grossPremium.getText().replace("£", "");
         return policyNumber.getText();
+    }
+
+    public String getCustomerId()
+    {
+        return customerID.getText();
+    }
+
+    public String getGrossPremium()
+    {
+        return grossPremium.getText().replace("£", "");
     }
 
     public String getPolicyNumberWebSite()
     {
-        SharedData.policyNumber = policyNumberWebSite.getText();
-        SharedData.customerId = customerIDWebsite.getText();
-        SharedData.grossPremium = grossPremiumWebsite.getText().replace("£", "");
         return policyNumberWebSite.getText();
+    }
+
+    public String getCustomerIdWebSite()
+    {
+        return customerIDWebsite.getText();
+    }
+
+    public String getGrossPremiumWebSite()
+    {
+        return grossPremiumWebsite.getText().replace("£", "");
     }
 }

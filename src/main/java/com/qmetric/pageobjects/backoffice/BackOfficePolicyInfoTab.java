@@ -183,9 +183,9 @@ public class BackOfficePolicyInfoTab extends BasePageObject
         driver.findElement(By.cssSelector(".renewingpolicy")).click();
     }
 
-    public boolean checkRenewalPolicyLink()
+    public boolean checkRenewalPolicyLink(String renewalPolicyId)
     {
-        if (driver.getCurrentUrl().contains(SharedData.renewalPolicyId))
+        if (driver.getCurrentUrl().contains(renewalPolicyId))
         {
             return true;
         }
