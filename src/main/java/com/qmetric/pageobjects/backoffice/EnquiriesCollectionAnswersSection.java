@@ -2,7 +2,7 @@ package com.qmetric.pageobjects.backoffice;
 
 import com.qmetric.domain.QuestionType;
 import com.qmetric.utilities.DynamicElementHandler;
-import com.qmetric.utilities.QuestionTypeMap;
+import com.qmetric.domain.QuestionTypeMap;
 import com.qmetric.utilities.TimeHelper;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;

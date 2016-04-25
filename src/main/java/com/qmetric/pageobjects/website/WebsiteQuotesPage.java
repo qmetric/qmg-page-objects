@@ -4,12 +4,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qmetric.domain.Quote;
-import com.qmetric.domain.WebsiteQuote;
 import com.qmetric.pageobjects.BasePageObject;
-import com.qmetric.shared.*;
 import com.qmetric.utilities.DynamicElementHandler;
+import com.qmetric.domain.Quote;
 import com.qmetric.utilities.URLCheck;
+import com.qmetric.domain.WebsiteQuote;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -17,7 +16,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA. User: jmartins Date: 11/11/2014
@@ -203,13 +207,13 @@ public class WebsiteQuotesPage extends BasePageObject
         }.execute();
     }
 
-    public void selectHomeQuote(final String quoteName)
+    public void selectHomeQuote(final String quoteId)
     {
         List<WebElement> quotes = getQuotes();
         for (WebElement quote : quotes)
         {
             WebElement insurerColumn = quote.findElement(By.cssSelector(".insurer > img"));
-            if (getQuoteName(insurerColumn).get().equals(quoteName))
+            if (getQuoteId(insurerColumn).get().equals(quoteId))
             {
                 final WebElement monthlyPriceElement = quote.findElement(By.className("monthly"));
                 SharedData.websiteQuoteMonthlyPrice = monthlyPriceElement.getText().split(" ")[1];
@@ -370,7 +374,7 @@ public class WebsiteQuotesPage extends BasePageObject
                 {
                     String quotePrice = quotePriceElements.get(index).getText();
                     Quote quote = new Quote();
-                    quote.setProductName(getQuoteName(quoteTitleElement).get());
+                    quote.setProductName(getQuoteId(quoteTitleElement).get());
                     quote.setPrice(quotePrice);
                     actualQuotes.add(quote);
                     index++;
@@ -397,13 +401,13 @@ public class WebsiteQuotesPage extends BasePageObject
         return findElement(By.className("no-quotes")).getText();
     }
 
-    public Optional<String> getheader(String quoteName)
+    public Optional<String> getheader(String quoteId)
     {
         List<WebElement> quotes = getQuotes();
         for (WebElement quote : quotes)
         {
             WebElement insurerColumn = quote.findElement(By.cssSelector(".insurer > img"));
-            if(getQuoteName(insurerColumn).get().equals(quoteName))
+            if(getQuoteId(insurerColumn).get().equals(quoteId))
             {
                 return Optional.of(quote.findElement(By.cssSelector("header")).getText());
             }
@@ -424,7 +428,7 @@ public class WebsiteQuotesPage extends BasePageObject
             {
                 String quotePrice = quotePriceElements.get(index).getText();
                 WebsiteQuote insurerQuote = new WebsiteQuote();
-                insurerQuote.setProductName(getQuoteName(quoteTitleElement).get());
+                insurerQuote.setProductName(getQuoteId(quoteTitleElement).get());
                 insurerQuote.setPrice(quotePrice);
                 actualQuotes.add(insurerQuote);
             }
@@ -451,7 +455,7 @@ public class WebsiteQuotesPage extends BasePageObject
         return doesWebElementExist(By.cssSelector(".button.btn-green"));
     }
 
-    public Optional<String> getLogo(final String product)
+    public Optional<String> getLogo(final String productId)
     {
         List<WebElement> quotes = getQuotes();
         for (WebElement quote : quotes)
@@ -459,7 +463,7 @@ public class WebsiteQuotesPage extends BasePageObject
             List<WebElement> quoteTitleElements = quote.findElements(By.cssSelector(".insurer > img"));
             for (WebElement quoteTitleElement : quoteTitleElements)
             {
-                if(getQuoteName(quoteTitleElement).get().contains(product))
+                if(getQuoteId(quoteTitleElement).get().contains(productId))
                 {
                     return Optional.of(getLogoText(quoteTitleElement).get());
                 }
@@ -478,40 +482,18 @@ public class WebsiteQuotesPage extends BasePageObject
     }
 
 
-    public Optional<String> getQuoteName(WebElement quoteTitleElement)
+    public Optional<String> getQuoteId(WebElement quoteTitleElement)
     {
         if (quoteTitleElement.getAttribute("alt").contains("2 year fixed")) {
             String[] segments = quoteTitleElement.getAttribute("src").split("/");
             if (segments.length > 0) {
-                return Optional.of(DataPatcher.patchQuoteName(segments[segments.length - 1].split("_")[1]+"a"));
+                return Optional.of(segments[segments.length - 1].split("_")[1]+"a");
             }
         }
         else
         {
-            return Optional.of(DataPatcher.patchQuoteName(quoteTitleElement.getAttribute("alt").replace(" logo", "")+"a"));
+            return Optional.of(quoteTitleElement.getAttribute("alt").replace(" logo", "")+"a");
         }
         return Optional.absent();
-    }
-
-    public Optional<String> getPrice(String product)
-    {
-        List<WebElement> quotes = getQuotes();
-        for (WebElement quote : quotes)
-        {
-            List<WebElement> quoteTitleElements = quote.findElements(By.cssSelector(".insurer > img"));
-            for (WebElement quoteTitleElement : quoteTitleElements)
-            {
-                if(getQuoteName(quoteTitleElement).get().contains(product))
-                {
-                    return Optional.of(getGrossPrice(quote).get());
-                }
-            }
-        }
-        return Optional.absent();
-    }
-
-    private Optional<String> getGrossPrice(final WebElement quote)
-    {
-        return Optional.of(quote.findElement(By.cssSelector(".premium > ul > li:nth-child(1)")).getText());
     }
 }

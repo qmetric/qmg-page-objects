@@ -1,12 +1,13 @@
 package com.qmetric.pageobjects.backoffice;
 
 import com.google.common.base.Predicate;
-import com.qmetric.domain.Answer;
-import com.qmetric.domain.CollectionInfo;
-import com.qmetric.domain.QuestionType;
 import com.qmetric.pageobjects.BasePageObject;
 import com.qmetric.pageobjects.HtmlTable;
-import com.qmetric.utilities.QuestionTypeMap;
+import com.qmetric.domain.Answer;
+import com.qmetric.domain.CollectionInfo;
+import com.qmetric.utilities.DynamicElementHandler;
+import com.qmetric.domain.QuestionType;
+import com.qmetric.domain.QuestionTypeMap;
 import com.qmetric.utilities.TimeHelper;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
@@ -182,7 +183,7 @@ public class BackOfficeEnquiryPage extends BasePageObject
             String questionId = answerMap.get("Question Id");
             String questionType = answerMap.get("Question Type");
             QuestionType type = new QuestionTypeMap().get(questionType);
-            String answer = DataPatcher.patchCarExcessAnswer(questionId, enquiriesAnswersSection.getAnswer(answerMap.get("Answer")));
+            String answer = patchCarExcessAnswer(questionId, enquiriesAnswersSection.getAnswer(answerMap.get("Answer")));
             String answerType = answerMap.get("Answer Type");
             String collectionId = answerMap.get("Collection Question Id");
             if (StringUtils.isNotEmpty(collectionId))
@@ -210,6 +211,15 @@ public class BackOfficeEnquiryPage extends BasePageObject
                 }
             }
         }
+    }
+
+    private String patchCarExcessAnswer(String questionId, String answer)
+    {
+        if (questionId.equals("Cover_VolXsAmt"))
+        {
+            return "\u00a3" + answer;
+        }
+        return answer;
     }
 
     public Answer getAnswers(String questionId, QuestionType questionType, String answerType) throws Exception
@@ -345,7 +355,7 @@ public class BackOfficeEnquiryPage extends BasePageObject
 
     public String getRebuildValue() throws Exception
     {
-       return driver.findElement(By.cssSelector("input[data-name=property_rebuild_value]")).getAttribute("value");
+        return driver.findElement(By.cssSelector("input[data-name=property_rebuild_value]")).getAttribute("value");
     }
 
     public Optional<String> getWarningMessage()
@@ -388,7 +398,7 @@ public class BackOfficeEnquiryPage extends BasePageObject
                         return false;
                     }
                 });
-               return new HtmlTable(claimsTable).getTableBodyColumnTextValuesWithRowHeader();
+                return new HtmlTable(claimsTable).getTableBodyColumnTextValuesWithRowHeader();
             }
         }.execute();
     }

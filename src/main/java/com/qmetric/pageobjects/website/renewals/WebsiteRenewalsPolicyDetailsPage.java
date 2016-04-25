@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qmetric.pageobjects.BasePageObject;
 import com.qmetric.pageobjects.HtmlTable;
-import com.qmetric.shared.DataPatcher;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -52,11 +51,11 @@ public class WebsiteRenewalsPolicyDetailsPage extends BasePageObject
                         if (doesWebElementExist(element, By.tagName("span")))
                         {
                             WebElement firstSpanElement = element.findElements(By.tagName("span")).get(0);
-                            detailsMap.put(key, DataPatcher.patchSharedData(firstSpanElement.getText()));
+                            detailsMap.put(key, firstSpanElement.getText());
                         }
                         else
                         {
-                            detailsMap.put(key, DataPatcher.patchSharedData(element.getText()));
+                            detailsMap.put(key, element.getText());
                         }
                     }
                     detailsMapList.add(detailsMap);
@@ -144,11 +143,11 @@ public class WebsiteRenewalsPolicyDetailsPage extends BasePageObject
                     {
                         if(claims.getText().contains("£"))
                         {
-                            detailsMap.put("claimAmount", DataPatcher.patchSharedData(claims.getText()));
+                            detailsMap.put("claimAmount", claims.getText());
                         }
                         else
                         {
-                            detailsMap.put("claimCause", DataPatcher.patchSharedData(claims.getText()));
+                            detailsMap.put("claimCause", claims.getText());
                         }
                     }
                     detailsMapList.add(detailsMap);

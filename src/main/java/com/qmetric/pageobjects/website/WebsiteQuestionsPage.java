@@ -4,11 +4,11 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.qmetric.browser.utility.Browser;
 import com.qmetric.domain.QuestionType;
+import com.qmetric.domain.RandomType;
 import com.qmetric.pageobjects.BasePageObject;
 import com.qmetric.pageobjects.HtmlTable;
-import com.qmetric.shared.*;
 import com.qmetric.utilities.DynamicElementHandler;
-import com.qmetric.utilities.QuestionTypeMap;
+import com.qmetric.domain.QuestionTypeMap;
 import com.qmetric.utilities.TimeHelper;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
@@ -170,6 +170,15 @@ public class WebsiteQuestionsPage extends BasePageObject
         jsClick(randomLink);
     }
 
+    private String patchCarExcessAnswer(String questionId, String answer)
+    {
+        if (questionId.equals("Cover_VolXsAmt"))
+        {
+            return "\u00a3" + answer;
+        }
+        return answer;
+    }
+
     private void enterAnswerMap(WebElement parentContainerElement, Map<String, String> answerMap)
     {
         String questionId = answerMap.get("Question Id");
@@ -179,7 +188,7 @@ public class WebsiteQuestionsPage extends BasePageObject
         }
         String questionType = answerMap.get("Question Type");
         QuestionType type = new QuestionTypeMap().get(questionType);
-        String answer = DataPatcher.patchCarExcessAnswer(questionId, getAnswer(answerMap.get("Answer")));
+        String answer = patchCarExcessAnswer(questionId, getAnswer(answerMap.get("Answer")));
         String answerType = answerMap.get("Answer Type");
         By questionElementLocator = By.cssSelector("section[data-question-id=" + questionId + "]");
         List<WebElement> questionElementsToFind = parentContainerElement.findElements(questionElementLocator);

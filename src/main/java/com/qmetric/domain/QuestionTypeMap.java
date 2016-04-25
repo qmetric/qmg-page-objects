@@ -1,4 +1,4 @@
-package com.qmetric.utilities;
+package com.qmetric.domain;
 
 import com.google.common.collect.Maps;
 import com.qmetric.domain.QuestionType;
